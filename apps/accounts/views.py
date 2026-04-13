@@ -84,7 +84,7 @@ class ChangePasswordView(generics.UpdateAPIView):
 @permission_classes([permissions.IsAuthenticated])
 def logout_view(request):
     try:
-        refresh_token = request.data.get('request_token')
+        refresh_token = request.data.get('refresh_token')
         if refresh_token:
             token = RefreshToken(refresh_token)
             token.blacklist()

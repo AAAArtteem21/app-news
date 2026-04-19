@@ -35,7 +35,7 @@ class CommentListCreateView(generics.ListCreateAPIView):
         return CommentSerializer
     
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Comment.filter(is_active=True).select_related('author','post')
+    queryset = Comment.objects.filter(is_active=True).select_related('author','post')
     serializer_class = CommentDetailSerializer
     permission_classes = [IsAuthorReadOnly]
 

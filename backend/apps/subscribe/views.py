@@ -16,7 +16,7 @@ from .serializers import (
     SubscriptionPlanSerializer,
     UserSubscriptionStatusSerializer,
 )
-from apps.main.models import Post
+from backend.apps.main.models import Post
 
 class SubscriptionPlanListView(generics.ListAPIView):
     queryset = SubscriptionPlan.objects.filter(is_active=True)

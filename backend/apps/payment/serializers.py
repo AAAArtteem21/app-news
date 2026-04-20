@@ -53,7 +53,7 @@ class PaymentCreateSerializer(serializers.Serializer):
     cancel_url = serializers.URLField(required=False)
 
     def validate_subscription_plan(self,value):
-        from apps.subscribe.models import SubscriptionPlan
+        from backend.apps.subscribe.models import SubscriptionPlan
 
         try:
             plan = SubscriptionPlan.objects.get(id=value,is_active=True)

@@ -6,7 +6,7 @@ from typing import Dict, Optional, Tuple
 import logging
 
 from .models import Payment, PaymentAttempt, WebhookEvent
-from apps.subscribe.models import Subscription, SubscriptionPlan, SubscriptionHistory
+from backend.apps.subscribe.models import Subscription, SubscriptionPlan, SubscriptionHistory
 
 logger = logging.getLogger(__name__)
 

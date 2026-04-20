@@ -13,7 +13,7 @@ from .serializers import(
     CommentUpdateSerializer,
 )
 from .permissions import IsAuthorReadOnly
-from apps.main.models import Post
+from backend.apps.main.models import Post
 
 class CommentListCreateView(generics.ListCreateAPIView):
 

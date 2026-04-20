@@ -52,8 +52,8 @@ class PaymentCreateSerializer(serializers.Serializer):
     success_url = serializers.URLField(required=False)
     cancel_url = serializers.URLField(required=False)
 
-    def validate_subscription_plan(self,value):
-        from backend.apps.subscribe.models import SubscriptionPlan
+    def validate_subscription_plan_id(self,value):
+        from apps.subscribe.models import SubscriptionPlan
 
         try:
             plan = SubscriptionPlan.objects.get(id=value,is_active=True)
@@ -66,14 +66,14 @@ class PaymentCreateSerializer(serializers.Serializer):
         user = self.context['request'].user
 
 
-        if hasattr(user,'subcription') and user.subscription.is_active:
+        if hasattr(user,'subscription') and user.subscription.is_active:
             raise serializers.ValidationError({
-                'non_field_erros': ['user already has an active subscription.']
+                'non_field_errors': ['user already has an active subscription.']
             })
         
         pending_payments = Payment.objects.filter(
             user=user,
-            status__in =['pending','processing']
+            status__in =['pending']
         ).exists()
 
         if pending_payments:

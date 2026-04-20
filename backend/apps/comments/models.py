@@ -31,3 +31,4 @@ class Comment(models.Model):
     @property
     def is_reply(self):
         return self.parent is not None
+

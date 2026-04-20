@@ -2,6 +2,9 @@ from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
 from django.urls import reverse
+from django.db.models import Exists, OuterRef
+from apps.subscribe.models import PinnedPost
+from django.utils import timezone
 
 
 class Category(models.Model):
@@ -25,68 +28,54 @@ class Category(models.Model):
         super().save(*args,**kwargs)
 
 class PostManager(models.Manager):
-    def published(self):
-        return self.filter(status='published')
 
-    def pinned_post(self):
-        return self.filter(
-            pin_info__isnull=False,
-            pin_info__user__subscription__status='active',
-            pin_info__user__subscription__end_date__gt=models.functions.Now,
+    def get_queryset(self):
+        return super().get_queryset().select_related('author', 'category')
+
+    def feed(self):
+        return self.get_queryset().filter(
             status='published'
-        ).select_related(
-            'pin_info','pin_info__user','pin_info__user__subscription'
-            
-        ).order_by('pin_info__pinned_at')
-    
-    def regular_post(self):
-        return self.filter(pin_info__isnull=True, status = 'published')
-    
-    def with_subscription_info(self):
-        return self.select_related(
-            'author','author__subscription','category'
-        ).prefetch_related('pin_info')
+        ).annotate(
+            is_pinned=Exists(
+                PinnedPost.objects.filter(post=OuterRef('pk'))
+            )
+        ).order_by('-is_pinned', '-created_at')
 
 
 class Post(models.Model):
     STATUS_CHOICES = [
         ('draft', 'Draft'),
-        ('published','Published'),
+        ('published', 'Published'),
     ]
 
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     content = models.TextField()
-    image = models.ImageField(upload_to='posts/',blank=True,null=True)
+    image = models.ImageField(upload_to='posts/', blank=True, null=True)
+
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
-        null= True,
-        related_name = 'posts'
+        null=True,
+        related_name='posts'
     )
+
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name = 'posts'
+        related_name='posts'
     )
-    status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='published')
+
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='published')
+
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now = True)
+    updated_at = models.DateTimeField(auto_now=True)
     views_count = models.PositiveIntegerField(default=0)
 
     objects = PostManager()
 
     class Meta:
-        db_table = 'posts'
-        verbose_name = 'Post'
-        verbose_name_plural = 'Posts'
         ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['-created_at']),
-            models.Index(fields=['status','-created_at']),
-            models.Index(fields=['category','-created_at']),
-            models.Index(fields=['author','-created_at']),
-        ]
 
     def __str__(self):
         return self.title
@@ -104,8 +93,8 @@ class Post(models.Model):
     def comments_count(self):
         return self.comments.filter(is_active=True).count()
     
-    @property
-    def is_pinned(self):
+
+    def is_pinned_flag(self):
         return hasattr(self,'pin_info') and self.pin_info is not None
 
     @property

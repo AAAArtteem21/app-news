@@ -98,3 +98,4 @@ class Migration(migrations.Migration):
             index=models.Index(fields=['end_date', 'status'], name='subscrtipti_end_dat_0463d0_idx'),
         ),
     ]
+

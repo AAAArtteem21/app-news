@@ -117,3 +117,4 @@ class Migration(migrations.Migration):
             index=models.Index(fields=['created_at'], name='payments_created_e3a130_idx'),
         ),
     ]
+

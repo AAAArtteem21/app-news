@@ -1,6 +1,6 @@
 # backend/apps/subscribe/management/commands/create_subscription_plans.py
 from django.core.management.base import BaseCommand
-from backend.apps.subscribe.models import SubscriptionPlan
+from apps.subscribe.models import SubscriptionPlan
 
 
 class Command(BaseCommand):

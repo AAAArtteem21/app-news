@@ -167,3 +167,4 @@ class SubscriptionHistory(models.Model):
     def __str__(self):
         return f"{self.subscription.user.username} - {self.action}"
     
+

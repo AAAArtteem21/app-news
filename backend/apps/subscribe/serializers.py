@@ -30,7 +30,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         model = Subscription
         fields = [
             'id','user','user_info','plan','plan_info','status',
-            'start_date','end_date','auto_renew','is_active','days_remaining'
+            'start_date','end_date','auto_renew','is_active','days_remaining',
             'created_at','updated_at'
         ]
         read_only_fields = ['id','created_at','user','status','start_date','end_date','updated_at']
@@ -154,7 +154,7 @@ class PinPostSerializer(serializers.Serializer):
     post_id = serializers.IntegerField()
 
     def validate_post_id(self,value):
-        from backend.apps.main.models import Post
+        from apps.main.models import Post
 
         try:
             post = Post.objects.get(id=value,status='published')

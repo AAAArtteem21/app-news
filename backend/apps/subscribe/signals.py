@@ -57,3 +57,4 @@ def pinned_post_pre_delete(sender,instance,created,**kwargs):
                 'post_title': instance.post.title
             }
         )
+

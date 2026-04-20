@@ -23,7 +23,7 @@ from .serializers import(
     WebhookEventSerializer
 )
 from .services import StripeService,PaymentService,WebhookService
-from backend.apps.subscribe.models import SubscriptionPlan
+from apps.subscribe.models import SubscriptionPlan
 
 class PaymentListView(generics.ListAPIView):
     serializer_class = PaymentSerializer
@@ -60,11 +60,11 @@ def create_checkout_session(request):
 
                 success_url = serializer.validated_data.get(
                     'success_url',
-                    f"{settings.FRONTED_URL}/payment/success?session_id={{CHECKOUT_SESSION_ID}}"
+                    f"{settings.FRONTEND_URL}/payment/success?session_id={{CHECKOUT_SESSION_ID}}"
                 )
                 cancel_url = serializer.validated_data.get(
                     'cancel_url',
-                    f"{settings.FRONTED_URL}/payment/cancel"
+                    f"{settings.FRONTEND_URL}/payment/cancel"
                 )
 
                 session_data = StripeService.create_checkout_session(
@@ -84,7 +84,7 @@ def create_checkout_session(request):
                 'error': str(e)
             },status=status.HTTP_400_BAD_REQUEST)
         
-    return Response(serializer.erros,status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
@@ -117,7 +117,7 @@ def payment_status(request, payment_id):
             response_data['subscription_activated'] = payment.subscription.is_active
             response_data['message'] = 'Payment succeful and subscription activated'
 
-        serializer = PaymentSerializer(response_data)
+        serializer = PaymentStatusSerializer(response_data)
         return Response(serializer.data)
     
     except Payment.DoesNotExist:
@@ -319,11 +319,11 @@ def retry_payment(request,payment_id):
 
         success_url = request.data.get(
             'success_url',
-            f"{settings.FRONTED_URL}/payment/success?session_id={{CHECKOUT_SESSION_ID}}"
+            f"{settings.FRONTEND_URL}/payment/success?session_id={{CHECKOUT_SESSION_ID}}"
         )
         cancel_url = request.data.get(
             'cancel_url',
-            f"{settings.FRONTED_URL}/payment/cancel"
+            f"{settings.FRONTEND_URL}/payment/cancel"
         )
 
         session_data = StripeService.create_checkout_session(

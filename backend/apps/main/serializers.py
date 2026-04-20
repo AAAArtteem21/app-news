@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Category, Post
 from django.utils.text import slugify
+import uuid
 
 class CategorySerializer(serializers.ModelSerializer):
     posts_count = serializers.SerializerMethodField()
@@ -21,19 +22,27 @@ class PostSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
     category = serializers.StringRelatedField()
     comments_count = serializers.ReadOnlyField()
-    is_pinned = serializers.ReadOnlyField()
+    is_pinned = serializers.SerializerMethodField()
     pinned_info = serializers.SerializerMethodField()
 
 
     class Meta:
         model = Post
         fields = [
-            'id', 'title','slug','content','image','category',
+            'id', 'title','content','image','category',
             'author','status','created_at','updated_at',
             'views_count','comments_count','is_pinned','pinned_info'
         ]
         read_only_fields = ['slug','author','views_count']
     
+    def get_is_pinned(self, obj):
+        # Якщо queryset використовував annotate (get_posts_for_feed)
+        if hasattr(obj, 'has_pinned'):
+            return bool(obj.has_pinned)
+        
+        # Звичайний fallback (для детальної сторінки тощо)
+        return obj.is_pinned
+
     def get_pinned_info(self, obj):
         return obj.get_pinned_info()
 
@@ -49,7 +58,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
     author_info = serializers.SerializerMethodField()
     category_info = serializers.SerializerMethodField()
     comments_count = serializers.ReadOnlyField()
-    is_pinned = serializers.ReadOnlyField()
+    is_pinned = serializers.SerializerMethodField()
     pinned_info = serializers.SerializerMethodField()
     can_pin = serializers.SerializerMethodField()
 
@@ -100,7 +109,13 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user
-        validated_data['slug'] = slugify(validated_data['title'])
+        
+        base_slug = slugify(validated_data['title'])
+        slug = base_slug
+        while Post.objects.filter(slug=slug).exists():
+            slug = f"{base_slug}-{str(uuid.uuid4())[:8]}"
+        
+        validated_data['slug'] = slug
         return super().create(validated_data)
     
     def update(self, instance, validated_data):

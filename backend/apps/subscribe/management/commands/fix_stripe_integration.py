@@ -2,7 +2,7 @@
 import stripe
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from backend.apps.subscribe.models import SubscriptionPlan
+from apps.subscribe.models import SubscriptionPlan
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 

@@ -54,6 +54,9 @@ class PostManager(models.Manager):
         return self.select_related(
             'author', 'author__subscription', 'category'
         ).prefetch_related('pin_info')
+    
+    def get_posts_for_feed(self):
+        return self.filter(is_published=True).order_by('-created_at')
 
 
 class Post(models.Model):
@@ -114,6 +117,9 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('post-detail', kwargs={'slug': self.slug})
+    
+
+
 
     @property
     def comments_count(self):

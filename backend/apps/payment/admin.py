@@ -35,7 +35,7 @@ class PaymentAdmin(admin.ModelAdmin):
         'stripe_session_id', 'description'
     )
     readonly_fields = (
-        'created_at', 'updated_at', 'processed_at', 'is_succesful', 
+        'created_at', 'updated_at', 'processed_at', 'is_successful', 
         'is_pending', 'can_be_refunded'
     )
     raw_id_fields = ('user', 'subscription')
@@ -60,7 +60,7 @@ class PaymentAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Status Info', {
-            'fields': ('is_succesful', 'is_pending', 'can_be_refunded'),
+            'fields': ('is_successful', 'is_pending', 'can_be_refunded'),
             'classes': ('collapse',)
         }),
         ('Timestamps', {

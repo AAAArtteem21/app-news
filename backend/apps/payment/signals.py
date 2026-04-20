@@ -1,10 +1,13 @@
-from django.db.models.signals import post_save,pre_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from .models import Payment
 from .services import PaymentService
 
-@receiver(pre_save,sender=Payment)
-def payment_pre_save(sender,instance,**kwargs):
+
+@receiver(pre_save, sender=Payment)
+def payment_pre_save(sender, instance, **kwargs):
+    """Обработчик перед сохранением платежа"""
+    # Сохраняем предыдущий статус для отслеживания изменений
     if instance.pk:
         try:
             previous = Payment.objects.get(pk=instance.pk)

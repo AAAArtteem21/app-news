@@ -2,18 +2,22 @@ from django.db import models
 from django.conf import settings
 from decimal import Decimal
 
+
 class Payment(models.Model):
-    STATUS_CHOICES=[
-        ('pending','Pending'),
-        ('processing','Processing'),
-        ('succeeded','Succeeded'),
-        ('failed','Failed'),
-        ('cancelled','Cancelled'),
-        ('refunded','Refunded'),
+    """Модель платежа"""
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ('succeeded', 'Succeeded'),
+        ('failed', 'Failed'),
+        ('cancelled', 'Cancelled'),
+        ('refunded', 'Refunded'),
     ]
-    PAYMENT_METHOD_CHOICES=[
-        ('stripe','Stripe'),
-        ('manual','Manual'),
+
+    PAYMENT_METHOD_CHOICES = [
+        ('stripe', 'Stripe'),
+        ('paypal', 'PayPal'),
+        ('manual', 'Manual'),
     ]
 
     user = models.ForeignKey(
@@ -21,14 +25,13 @@ class Payment(models.Model):
         on_delete=models.CASCADE,
         related_name='payments'
     )
-    subscription=  models.ForeignKey(
+    subscription = models.ForeignKey(
         'subscribe.Subscription',
         on_delete=models.CASCADE,
         related_name='payments',
         null=True,
         blank=True
     )
-
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=3, default='USD')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -62,26 +65,31 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment {self.id} - {self.user.username} - ${self.amount} ({self.status})"
-    
+
     @property
-    def is_succesful(self):
-        return self.status=='succeeded'
-    
+    def is_successful(self):
+        """Проверяет, успешен ли платеж"""
+        return self.status == 'succeeded'
+
     @property
     def is_pending(self):
-        return self.status in ['pending','processing']
-    
+        """Проверяет, ожидает ли платеж обработки"""
+        return self.status in ['pending', 'processing']
+
     @property
     def can_be_refunded(self):
-        return self.status =='succeeded' and self.payment_method =='stripe'
-    
+        """Проверяет, можно ли вернуть платеж"""
+        return self.status == 'succeeded' and self.payment_method == 'stripe'
+
     def mark_as_succeeded(self):
+        """Помечает платеж как успешный"""
         from django.utils import timezone
         self.status = 'succeeded'
         self.processed_at = timezone.now()
         self.save()
 
-    def mark_as_failed(self,reason=None):
+    def mark_as_failed(self, reason=None):
+        """Помечает платеж как неудачный"""
         from django.utils import timezone
         self.status = 'failed'
         self.processed_at = timezone.now()
@@ -89,7 +97,9 @@ class Payment(models.Model):
             self.metadata['failure_reason'] = reason
         self.save()
 
+
 class PaymentAttempt(models.Model):
+    """Попытки платежа"""
     payment = models.ForeignKey(
         Payment,
         on_delete=models.CASCADE,
@@ -110,6 +120,7 @@ class PaymentAttempt(models.Model):
     def __str__(self):
         return f"Attempt for Payment {self.payment.id} - {self.status}"
     
+
 class Refund(models.Model):
     """Модель возврата средств"""
     STATUS_CHOICES = [
@@ -151,14 +162,16 @@ class Refund(models.Model):
     
     @property
     def is_partial(self):
+        """Проверяет, является ли возврат частичным"""
         return self.amount < self.payment.amount
-    
 
     def process_refund(self):
+        """Обрабатывает возврат средств"""
         from django.utils import timezone
-        self.status = 'suceeded'
+        self.status = 'succeeded'
         self.processed_at = timezone.now()
         self.save()
+
 
 class WebhookEvent(models.Model):
     """События webhook от платежных систем"""
@@ -212,3 +225,5 @@ class WebhookEvent(models.Model):
         self.error_message = error_message
         self.processed_at = timezone.now()
         self.save()
+    
+

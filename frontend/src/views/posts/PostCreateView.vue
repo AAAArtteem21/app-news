@@ -23,12 +23,14 @@
                 v-model="form.title"
                 type="text"
                 required
-                maxlength="200"
                 class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 text-sm"
                 :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.title }"
                 placeholder="Введите заголовок статьи..."
+                maxlength="200"
               />
-              <div v-if="errors.title" class="mt-1 text-xs text-red-600">{{ errors.title }}</div>
+              <div v-if="errors.title" class="mt-1 text-xs text-red-600">
+                {{ errors.title }}
+              </div>
               <div class="mt-1 text-xs text-gray-500">
                 {{ form.title.length }}/200 символов
               </div>
@@ -51,7 +53,9 @@
                   {{ category.name }}
                 </option>
               </select>
-              <div v-if="errors.category" class="mt-1 text-xs text-red-600">{{ errors.category }}</div>
+              <div v-if="errors.category" class="mt-1 text-xs text-red-600">
+                {{ errors.category }}
+              </div>
             </div>
 
             <!-- Изображение -->
@@ -75,7 +79,7 @@
                   </button>
                 </div>
               </div>
-
+              
               <!-- Загрузка изображения -->
               <div class="flex items-center justify-center w-full">
                 <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-md cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
@@ -94,7 +98,9 @@
                   />
                 </label>
               </div>
-              <div v-if="errors.image" class="mt-1 text-xs text-red-600">{{ errors.image }}</div>
+              <div v-if="errors.image" class="mt-1 text-xs text-red-600">
+                {{ errors.image }}
+              </div>
             </div>
           </div>
         </div>
@@ -111,23 +117,50 @@
             
             <!-- Панель инструментов -->
             <div class="border border-gray-300 rounded-t-md bg-gray-50 p-2 flex items-center space-x-2">
-              <button type="button" @click="formatText('bold')" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Жирный">
+              <button
+                type="button"
+                @click="formatText('bold')"
+                class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors"
+                title="Жирный"
+              >
                 <BoldIcon class="w-4 h-4" />
               </button>
-              <button type="button" @click="formatText('italic')" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Курсив">
+              <button
+                type="button"
+                @click="formatText('italic')"
+                class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors"
+                title="Курсив"
+              >
                 <ItalicIcon class="w-4 h-4" />
               </button>
               <div class="border-l border-gray-300 h-6"></div>
-              <button type="button" @click="formatText('h2')" class="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Заголовок">H2</button>
-              <button type="button" @click="formatText('quote')" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Цитата">
+              <button
+                type="button"
+                @click="formatText('h2')"
+                class="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors"
+                title="Заголовок"
+              >
+                H2
+              </button>
+              <button
+                type="button"
+                @click="formatText('quote')"
+                class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors"
+                title="Цитата"
+              >
                 <ChatBubbleLeftIcon class="w-4 h-4" />
               </button>
               <div class="border-l border-gray-300 h-6"></div>
-              <button type="button" @click="formatText('link')" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Ссылка">
+              <button
+                type="button"
+                @click="formatText('link')"
+                class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors"
+                title="Ссылка"
+              >
                 <LinkIcon class="w-4 h-4" />
               </button>
             </div>
-
+            
             <!-- Текстовая область -->
             <textarea
               ref="contentTextarea"
@@ -136,11 +169,13 @@
               rows="15"
               class="block w-full px-3 py-2 border border-gray-300 rounded-b-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 text-sm"
               :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.content }"
-              placeholder="Напишите содержимое статьи..."
+              placeholder="Напишите содержимое статьи...&#10;&#10;Вы можете использовать простую разметку:&#10;**жирный текст**&#10;*курсив*&#10;## Заголовок&#10;> Цитата&#10;[ссылка](URL)"
               @keydown="handleKeydown"
             ></textarea>
             
-            <div v-if="errors.content" class="mt-1 text-xs text-red-600">{{ errors.content }}</div>
+            <div v-if="errors.content" class="mt-1 text-xs text-red-600">
+              {{ errors.content }}
+            </div>
             <div class="mt-1 text-xs text-gray-500 flex justify-between">
               <span>{{ form.content.length }} символов</span>
               <span class="text-gray-400">Минимум 100 символов</span>
@@ -158,14 +193,24 @@
               <label class="block text-sm font-medium text-gray-700">Статус публикации</label>
               <div class="space-y-3">
                 <label class="flex items-start">
-                  <input v-model="form.status" type="radio" value="published" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-1" />
+                  <input
+                    v-model="form.status"
+                    type="radio"
+                    value="published"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-1"
+                  />
                   <span class="ml-3 text-sm">
                     <span class="font-medium text-gray-900">Опубликовать</span>
                     <span class="text-gray-500 block">Статья будет доступна всем пользователям</span>
                   </span>
                 </label>
                 <label class="flex items-start">
-                  <input v-model="form.status" type="radio" value="draft" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-1" />
+                  <input
+                    v-model="form.status"
+                    type="radio"
+                    value="draft"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-1"
+                  />
                   <span class="ml-3 text-sm">
                     <span class="font-medium text-gray-900">Сохранить как черновик</span>
                     <span class="text-gray-500 block">Статья будет сохранена, но не опубликована</span>
@@ -174,11 +219,18 @@
               </div>
             </div>
 
-            <!-- Разрешить комментарии -->
+            <!-- Дополнительные настройки -->
             <div class="pt-4 border-t border-gray-200">
               <div class="flex items-center">
-                <input id="allow-comments" v-model="form.allowComments" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                <label for="allow-comments" class="ml-3 text-sm text-gray-700">Разрешить комментарии к статье</label>
+                <input
+                  id="allow-comments"
+                  v-model="form.allowComments"
+                  type="checkbox"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label for="allow-comments" class="ml-3 text-sm text-gray-700">
+                  Разрешить комментарии к статье
+                </label>
               </div>
             </div>
           </div>
@@ -201,20 +253,21 @@
             <ArrowLeftIcon class="w-4 h-4 mr-2" />
             Отмена
           </router-link>
-
+          
           <div class="flex items-center space-x-3">
-            <!-- Предпросмотр -->
+            <!-- Предварительный просмотр -->
             <button
               type="button"
               @click="showPreview = true"
               class="py-2 px-4 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-700 text-sm font-medium transition-colors"
               :disabled="!form.title || !form.content"
+              :class="{ 'opacity-50 cursor-not-allowed': !form.title || !form.content }"
             >
               <EyeIcon class="w-4 h-4 mr-2" />
               Предпросмотр
             </button>
-
-            <!-- Статус автосохранения -->
+            
+            <!-- Автосохранение статус -->
             <div v-if="isAutoSaving" class="flex items-center text-sm text-gray-500">
               <div class="inline-block w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin mr-2"></div>
               Автосохранение...
@@ -222,8 +275,8 @@
             <div v-else-if="lastSaved" class="text-sm text-gray-500">
               Сохранено {{ formatTime(lastSaved) }}
             </div>
-
-            <!-- Кнопка отправки -->
+            
+            <!-- Сохранить -->
             <button
               type="submit"
               :disabled="postsStore.isSubmitting || !form.title.trim() || !form.content.trim()"
@@ -240,24 +293,35 @@
 
       <!-- Модальное окно предпросмотра -->
       <teleport to="body">
-        <div v-if="showPreview" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click.self="showPreview = false">
+        <div
+          v-if="showPreview"
+          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          @click.self="showPreview = false"
+        >
           <div class="bg-white rounded-md max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
               <div>
                 <h3 class="text-lg font-semibold text-gray-900">Предварительный просмотр</h3>
                 <p class="text-sm text-gray-500">Так будет выглядеть ваша статья</p>
               </div>
-              <button @click="showPreview = false" class="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-50 transition-colors">
+              <button
+                @click="showPreview = false"
+                class="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-50 transition-colors"
+              >
                 <XMarkIcon class="w-5 h-5" />
               </button>
             </div>
             
             <div class="p-6">
+              <!-- Превью поста -->
               <article class="prose prose-sm md:prose-lg max-w-none text-gray-700">
                 <div v-if="imagePreview" class="mb-6">
                   <img :src="imagePreview" alt="Preview" class="w-full h-64 object-cover rounded-md" />
                 </div>
-                <h1 class="text-2xl md:text-3xl font-semibold text-gray-900 mb-4">{{ form.title || 'Заголовок статьи' }}</h1>
+                
+                <h1 class="text-2xl md:text-3xl font-semibold text-gray-900 mb-4">
+                  {{ form.title || 'Заголовок статьи' }}
+                </h1>
                 
                 <div class="flex items-center space-x-4 text-gray-600 text-sm mb-6 pb-6 border-b border-gray-200">
                   <div class="flex items-center space-x-2">
@@ -268,6 +332,7 @@
                   </div>
                   <span>•</span>
                   <span>{{ new Date().toLocaleDateString('ru-RU') }}</span>
+                  <span v-if="selectedCategoryName">•</span>
                   <span v-if="selectedCategoryName" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600">
                     {{ selectedCategoryName }}
                   </span>
@@ -276,13 +341,19 @@
                 <div v-html="formattedPreviewContent"></div>
               </article>
             </div>
-
+            
             <div class="p-6 border-t border-gray-200 bg-gray-50">
               <div class="flex justify-end space-x-3">
-                <button @click="showPreview = false" class="py-2 px-4 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-700 text-sm font-medium transition-colors">
+                <button
+                  @click="showPreview = false"
+                  class="py-2 px-4 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-700 text-sm font-medium transition-colors"
+                >
                   Закрыть
                 </button>
-                <button @click="showPreview = false" class="py-2 px-4 border border-transparent rounded-md text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium transition-colors">
+                <button
+                  @click="showPreview = false"
+                  class="py-2 px-4 border border-transparent rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm font-medium transition-colors"
+                >
                   Продолжить редактирование
                 </button>
               </div>
@@ -295,11 +366,12 @@
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { usePostsStore } from '@/stores/posts'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
 import {
   XMarkIcon,
   PhotoIcon,
@@ -311,23 +383,35 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'
 
-const BoldIcon = { /* ... оставил как было */ }
-const ItalicIcon = { /* ... оставил как было */ }
+// Компоненты иконок для форматирования
+const BoldIcon = {
+  template: '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4v12c0 .55.45 1 1 1h4.5c2.49 0 4.5-2.01 4.5-4.5 0-1.4-.65-2.64-1.67-3.45.39-.82.67-1.69.67-2.55C15 4.01 12.99 2 10.5 2H7c-.55 0-1 .45-1 1v1zm2 2h2.5c.83 0 1.5.67 1.5 1.5S11.33 9 10.5 9H8V6zm0 5h3c.83 0 1.5.67 1.5 1.5S11.83 14 11 14H8v-3z"/></svg>'
+}
+
+const ItalicIcon = {
+  template: '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M8 2h6v2h-2l-2 8h2v2H6v-2h2l2-8H8V2z"/></svg>'
+}
 
 export default {
   name: 'PostCreateView',
   components: {
-    XMarkIcon, PhotoIcon, EyeIcon, ChatBubbleLeftIcon,
-    ArrowLeftIcon, DocumentPlusIcon, LinkIcon, ExclamationTriangleIcon,
-    BoldIcon, ItalicIcon
+    XMarkIcon,
+    PhotoIcon,
+    EyeIcon,
+    ChatBubbleLeftIcon,
+    ArrowLeftIcon,
+    DocumentPlusIcon,
+    LinkIcon,
+    ExclamationTriangleIcon,
+    BoldIcon,
+    ItalicIcon
   },
-
   setup() {
     const router = useRouter()
     const authStore = useAuthStore()
     const postsStore = usePostsStore()
     const toast = useToast()
-
+    
     const contentTextarea = ref(null)
     const showPreview = ref(false)
     const imagePreview = ref(null)
@@ -335,7 +419,7 @@ export default {
     const isAutoSaving = ref(false)
     const lastSaved = ref(null)
     const autoSaveTimer = ref(null)
-
+    
     const form = reactive({
       title: '',
       content: '',
@@ -343,22 +427,20 @@ export default {
       status: 'published',
       allowComments: true
     })
-
+    
     const errors = ref({})
-
+    
     const categories = computed(() => postsStore.categories)
-
+    
     const selectedCategoryName = computed(() => {
       if (!form.category) return null
       const category = categories.value.find(cat => cat.id == form.category)
       return category?.name || null
     })
-
+    
     const formattedPreviewContent = computed(() => {
-      if (!form.content) {
-        return '<p class="text-gray-500 italic">Содержимое статьи будет отображено здесь...</p>'
-      }
-
+      if (!form.content) return '<p class="text-gray-500 italic">Содержимое статьи будет отображено здесь...</p>'
+      
       return form.content
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -371,161 +453,290 @@ export default {
         .replace(/^/, '<p class="mb-4">')
         .replace(/$/, '</p>')
     })
-
-    // ====================== Автосохранение ======================
+    
+    // Автосохранение
     const startAutoSave = () => {
-      if (autoSaveTimer.value) clearInterval(autoSaveTimer.value)
+      if (autoSaveTimer.value) {
+        clearInterval(autoSaveTimer.value)
+      }
+      
       autoSaveTimer.value = setInterval(() => {
-        if (form.title.trim() && form.content.trim()) saveAsDraft(true)
-      }, 30000)
+        if (form.title.trim() && form.content.trim()) {
+          saveAsDraft(true)
+        }
+      }, 30000) // Автосохранение каждые 30 секунд
     }
-
+    
     const saveAsDraft = async (isAutoSave = false) => {
       if (!form.title.trim() || !form.content.trim()) return
-      if (isAutoSave) isAutoSaving.value = true
-
+      
+      if (isAutoSave) {
+        isAutoSaving.value = true
+      }
+      
       try {
         const formData = new FormData()
         formData.append('title', form.title.trim())
         formData.append('content', form.content.trim())
         formData.append('status', 'draft')
-        if (form.category) formData.append('category', form.category)
-        if (imageFile.value) formData.append('image', imageFile.value)
-
+        
+        if (form.category) {
+          formData.append('category', form.category)
+        }
+        
+        if (imageFile.value) {
+          formData.append('image', imageFile.value)
+        }
+        
+        // Сохраняем как черновик
         await api.post('/api/v1/posts/', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         })
-
-        if (isAutoSave) lastSaved.value = new Date()
+        
+        if (isAutoSave) {
+          lastSaved.value = new Date()
+        }
       } catch (error) {
         console.error('Ошибка автосохранения:', error)
       } finally {
-        if (isAutoSave) isAutoSaving.value = false
+        if (isAutoSave) {
+          isAutoSaving.value = false
+        }
       }
     }
-
-    // ====================== Обработчики ======================
+    
     const handleImageChange = (event) => {
       const file = event.target.files[0]
-      if (!file) return
-
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('Размер файла не должен превышать 10MB')
-        return
+      if (file) {
+        // Проверяем размер файла (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error('Размер файла не должен превышать 10MB')
+          return
+        }
+        
+        // Проверяем тип файла
+        if (!file.type.startsWith('image/')) {
+          toast.error('Можно загружать только изображения')
+          return
+        }
+        
+        imageFile.value = file
+        
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          imagePreview.value = e.target.result
+        }
+        reader.readAsDataURL(file)
       }
-      if (!file.type.startsWith('image/')) {
-        toast.error('Можно загружать только изображения')
-        return
-      }
-
-      imageFile.value = file
-      const reader = new FileReader()
-      reader.onload = (e) => { imagePreview.value = e.target.result }
-      reader.readAsDataURL(file)
     }
-
+    
     const removeImage = () => {
       imagePreview.value = null
       imageFile.value = null
     }
-
-    const formatText = (format) => { /* ... твой код formatText без изменений ... */ }
-    const handleKeydown = (event) => { /* ... твой код handleKeydown без изменений ... */ }
-
+    
+    const formatText = (format) => {
+      const textarea = contentTextarea.value
+      const start = textarea.selectionStart
+      const end = textarea.selectionEnd
+      const selectedText = form.content.substring(start, end)
+      
+      let formattedText = ''
+      let cursorOffset = 0
+      
+      switch (format) {
+        case 'bold':
+          formattedText = `**${selectedText}**`
+          cursorOffset = selectedText ? 0 : 2
+          break
+        case 'italic':
+          formattedText = `*${selectedText}*`
+          cursorOffset = selectedText ? 0 : 1
+          break
+        case 'h2':
+          formattedText = `## ${selectedText}`
+          cursorOffset = selectedText ? 0 : 3
+          break
+        case 'quote':
+          formattedText = `> ${selectedText}`
+          cursorOffset = selectedText ? 0 : 2
+          break
+        case 'link':
+          const url = selectedText.startsWith('http') ? selectedText : 'https://'
+          const linkText = selectedText.startsWith('http') ? 'Текст ссылки' : selectedText || 'Текст ссылки'
+          formattedText = `[${linkText}](${url})`
+          cursorOffset = selectedText ? 0 : 1
+          break
+        default:
+          formattedText = selectedText
+      }
+      
+      form.content = form.content.substring(0, start) + formattedText + form.content.substring(end)
+      
+      // Восстанавливаем фокус
+      setTimeout(() => {
+        textarea.focus()
+        const newPosition = start + formattedText.length - cursorOffset
+        textarea.setSelectionRange(newPosition, newPosition)
+      }, 0)
+    }
+    
+    const handleKeydown = (event) => {
+      // Горячие клавиши
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case 'b':
+            event.preventDefault()
+            formatText('bold')
+            break
+          case 'i':
+            event.preventDefault()
+            formatText('italic')
+            break
+          case 's':
+            event.preventDefault()
+            if (event.shiftKey) {
+              form.status = 'published'
+              handleSubmit()
+            } else {
+              saveAsDraft()
+            }
+            break
+        }
+      }
+      
+      // Tab для отступов
+      if (event.key === 'Tab') {
+        event.preventDefault()
+        const start = event.target.selectionStart
+        const end = event.target.selectionEnd
+        form.content = form.content.substring(0, start) + '  ' + form.content.substring(end)
+        setTimeout(() => {
+          event.target.setSelectionRange(start + 2, start + 2)
+        }, 0)
+      }
+    }
+    
     const validateForm = () => {
       const newErrors = {}
-      if (!form.title.trim()) newErrors.title = 'Заголовок обязателен'
-      else if (form.title.length > 200) newErrors.title = 'Заголовок не должен превышать 200 символов'
-
-      if (!form.content.trim()) newErrors.content = 'Содержимое статьи обязательно'
-      else if (form.content.length < 100) newErrors.content = 'Статья должна содержать минимум 100 символов'
-
+      
+      if (!form.title.trim()) {
+        newErrors.title = 'Заголовок обязателен'
+      } else if (form.title.length > 200) {
+        newErrors.title = 'Заголовок не должен превышать 200 символов'
+      }
+      
+      if (!form.content.trim()) {
+        newErrors.content = 'Содержимое статьи обязательно'
+      } else if (form.content.length < 100) {
+        newErrors.content = 'Статья должна содержать минимум 100 символов'
+      }
+      
       errors.value = newErrors
       return Object.keys(newErrors).length === 0
     }
-
-    // ====================== Основной submit ======================
+    
     const handleSubmit = async () => {
       errors.value = {}
-
+      
       if (!validateForm()) {
         toast.error('Пожалуйста, исправьте ошибки в форме')
         return
       }
-
+      
       try {
+        // Создаем объект с данными для API
         const postData = {
           title: form.title.trim(),
           content: form.content.trim(),
           status: form.status
         }
-        if (form.category) postData.category = form.category
-
-        const requestData = imageFile.value
-          ? (() => {
-              const fd = new FormData()
-              Object.keys(postData).forEach(key => fd.append(key, postData[key]))
-              fd.append('image', imageFile.value)
-              return fd
-            })()
-          : postData
-
+        
+        // Добавляем категорию, если выбрана
+        if (form.category) {
+          postData.category = form.category
+        }
+        
+        // Если есть изображение, создаем FormData
+        let requestData
+        if (imageFile.value) {
+          requestData = new FormData()
+          Object.keys(postData).forEach(key => {
+            requestData.append(key, postData[key])
+          })
+          requestData.append('image', imageFile.value)
+        } else {
+          requestData = postData
+        }
+        
+        // Используем store метод вместо прямого API вызова
         const newPost = await postsStore.createPost(requestData)
-
-        toast.success(
-          form.status === 'published' ? 'Статья успешно опубликована!' : 'Черновик сохранен!'
-        )
-
-        // Очищаем таймер автосохранения
+        
+        // Очищаем автосохранение
         if (autoSaveTimer.value) {
           clearInterval(autoSaveTimer.value)
         }
-
-        // Безопасная навигация
-        await nextTick()
-
-        if (newPost?.slug) {
-          router.push({ name: 'PostDetail', params: { slug: newPost.slug } })
-        } else {
-          router.push('/posts')
-        }
-
+        
+        toast.success(
+          form.status === 'published' 
+            ? 'Статья успешно опубликована!' 
+            : 'Черновик сохранен!'
+        )
+        
+        router.push({ name: 'PostDetail', params: { slug: newPost.slug } })
+        
       } catch (error) {
         console.error('Ошибка создания поста:', error)
-
+        
         if (error.response?.status === 400) {
-          const data = error.response.data || {}
+          const data = error.response.data
           Object.keys(data).forEach(key => {
-            errors.value[key] = Array.isArray(data[key]) ? data[key][0] : data[key]
+            if (Array.isArray(data[key])) {
+              errors.value[key] = data[key][0]
+            }
           })
         } else {
-          errors.value.general = 'Произошла ошибка при создании статьи. Попробуйте ещё раз.'
+          errors.value.general = 'Произошла ошибка при создании статьи. Попробуйте еще раз.'
         }
-
-        toast.error('Не удалось создать статью')
       }
     }
-
-    const formatTime = (date) => { /* ... твой код formatTime без изменений ... */ }
-
-    // ====================== Lifecycle ======================
+    
+    const formatTime = (date) => {
+      const now = new Date()
+      const diff = Math.floor((now - date) / 1000)
+      
+      if (diff < 60) return 'только что'
+      if (diff < 3600) return `${Math.floor(diff / 60)} мин. назад`
+      if (diff < 86400) return `${Math.floor(diff / 3600)} ч. назад`
+      
+      return date.toLocaleDateString('ru-RU')
+    }
+    
+    // Отслеживаем изменения для автосохранения
     watch([() => form.title, () => form.content], () => {
       if (form.title.trim() && form.content.trim()) {
         startAutoSave()
       }
     })
-
+    
     onMounted(async () => {
+      // Загружаем категории, если их нет
       if (categories.value.length === 0) {
         await postsStore.fetchCategories()
       }
+      
+      // Фокусируемся на заголовке
       document.querySelector('input[type="text"]')?.focus()
     })
-
+    
     onUnmounted(() => {
-      if (autoSaveTimer.value) clearInterval(autoSaveTimer.value)
+      if (autoSaveTimer.value) {
+        clearInterval(autoSaveTimer.value)
+      }
     })
-
+    
     return {
       authStore,
       postsStore,

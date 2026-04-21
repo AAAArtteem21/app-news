@@ -1,360 +1,419 @@
 <template>
-  <article class="card hover:shadow-lg transition-all duration-300 group overflow-hidden">
-    <!-- Изображение поста -->
-    <div class="relative overflow-hidden">
-      <div
-        v-if="post.image"
-        class="aspect-w-16 aspect-h-9 bg-gray-200"
-      >
-        <img
-          :src="post.image"
-          :alt="post.title"
-          class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-          loading="lazy"
-          @error="handleImageError"
-        />
-      </div>
-      <div
-        v-else
-        class="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
-      >
-        <DocumentTextIcon class="w-12 h-12 text-gray-400" />
-      </div>
+  <form @submit.prevent="handleSubmit" class="space-y-8">
+    <!-- Основная информация -->
+    <div class="bg-white rounded-md shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Основная информация</h2>
       
-      <!-- Статус поста -->
-      <div class="absolute top-3 left-3">
-        <span
-          v-if="post.status === 'draft'"
-          class="badge bg-warning-100 text-warning-800 text-xs"
-        >
-          Черновик
-        </span>
-      </div>
-      
-      <!-- Категория -->
-      <div v-if="post.category && getCategorySlug(post.category)" class="absolute top-3 right-3">
-        <router-link
-          :to="{ name: 'CategoryPosts', params: { slug: getCategorySlug(post.category) } }"
-          class="badge badge-primary text-xs hover:bg-accent-200 transition-colors"
-          @click.stop
-        >
-          {{ getCategoryName(post.category) }}
-        </router-link>
-      </div>
-      <div v-else-if="post.category" class="absolute top-3 right-3">
-        <span class="badge badge-primary text-xs cursor-default">
-          {{ getCategoryName(post.category) }}
-        </span>
-      </div>
-
-      <div v-if="post.is_pinned" class="absolute top-3 left-3">
-        <span class="badge bg-yellow-100 text-yellow-800 text-xs flex items-center">
-          <PinIcon class="w-3 h-3 mr-1" />
-          Закреплен
-        </span>
-      </div>
-    </div>
-
-    <!-- Содержимое карточки -->
-    <div class="card-body">
-      <!-- Заголовок -->
-      <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-accent-600 transition-colors">
-        <router-link
-          :to="{ name: 'PostDetail', params: { slug: post.slug } }"
-          class="hover:underline"
-        >
-          {{ post.title }}
-        </router-link>
-      </h3>
-      
-      <!-- Краткое содержание -->
-      <p class="text-gray-600 text-sm mb-4 line-clamp-3">
-        {{ truncatedContent }}
-      </p>
-      
-      <!-- Метаданные поста -->
-      <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
-        <div class="flex items-center space-x-4">
-          <!-- Автор -->
-          <div class="flex items-center space-x-1">
-            <UserIcon class="w-4 h-4" />
-            <span>{{ post.author }}</span>
-          </div>
-          
-          <!-- Дата -->
-          <div class="flex items-center space-x-1">
-            <CalendarIcon class="w-4 h-4" />
-            <time :datetime="post.created_at">
-              {{ formatDate(post.created_at) }}
-            </time>
-          </div>
+      <div class="space-y-6">
+        <!-- Заголовок -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">
+            Заголовок статьи <span class="text-red-500">*</span>
+          </label>
+          <input
+            v-model="form.title"
+            type="text"
+            required
+            class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 text-sm"
+            :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.title }"
+            placeholder="Введите заголовок статьи..."
+            maxlength="200"
+          />
+          <div v-if="errors.title" class="mt-1 text-xs text-red-600">{{ errors.title }}</div>
+          <div class="mt-1 text-xs text-gray-500">{{ form.title.length }}/200 символов</div>
         </div>
-        
-        <!-- Статистика -->
-        <div class="flex items-center space-x-3">
-          <!-- Просмотры -->
-          <div class="flex items-center space-x-1">
-            <EyeIcon class="w-4 h-4" />
-            <span>{{ formatNumber(post.views_count) }}</span>
-          </div>
-          
-          <!-- Комментарии -->
-          <div class="flex items-center space-x-1">
-            <ChatBubbleLeftIcon class="w-4 h-4" />
-            <span>{{ formatNumber(post.comments_count) }}</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Действия -->
-      <div class="flex items-center justify-between">
-        <router-link
-          :to="{ name: 'PostDetail', params: { slug: post.slug } }"
-          class="text-accent-600 hover:text-accent-700 font-medium text-sm transition-colors"
-        >
-          Читать далее →
-        </router-link>
-        
-        <!-- Меню действий для автора -->
-        <div v-if="canEdit" class="relative">
-          <button
-            @click="showActions = !showActions"
-            class="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+
+        <!-- Категория -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Категория</label>
+          <select
+            v-model="form.category"
+            class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
           >
-            <EllipsisVerticalIcon class="w-5 h-5" />
-          </button>
+            <option value="">Выберите категорию</option>
+            <option v-for="category in categories" :key="category.id" :value="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Изображение -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Изображение</label>
           
-          <!-- Выпадающее меню -->
-          <transition name="fade">
-            <div
-              v-if="showActions"
-              v-click-outside="() => showActions = false"
-              class="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10"
-            >
-              <router-link
-                :to="{ name: 'PostEdit', params: { slug: post.slug } }"
-                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                @click="showActions = false"
-              >
-                <PencilIcon class="w-4 h-4 mr-3" />
-                Редактировать
-              </router-link>
+          <!-- Превью -->
+          <div v-if="imagePreview" class="mb-4">
+            <div class="relative inline-block">
+              <img
+                :src="imagePreview"
+                alt="Preview"
+                class="w-full max-w-md h-48 object-cover rounded-md border border-gray-200"
+              />
               <button
-                @click="handleDelete"
-                class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                type="button"
+                @click="removeImage"
+                class="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
               >
-                <TrashIcon class="w-4 h-4 mr-3" />
-                Удалить
+                <XMarkIcon class="w-4 h-4" />
               </button>
             </div>
-          </transition>
+          </div>
+          
+          <!-- Загрузка -->
+          <div class="flex items-center justify-center w-full">
+            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-md cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <PhotoIcon class="w-8 h-8 mb-2 text-gray-400" />
+                <p class="mb-2 text-sm text-gray-500">
+                  <span class="font-medium">Нажмите для загрузки</span> или перетащите файл
+                </p>
+                <p class="text-xs text-gray-500">PNG, JPG, WEBP до 10MB</p>
+              </div>
+              <input type="file" accept="image/*" class="hidden" @change="handleImageChange" />
+            </label>
+          </div>
+          <div v-if="errors.image" class="mt-1 text-xs text-red-600">{{ errors.image }}</div>
         </div>
-        <PostPinButton v-if="canEdit" :post="post" />
       </div>
     </div>
-  </article>
+
+    <!-- Содержимое -->
+    <div class="bg-white rounded-md shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Содержимое статьи</h2>
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700">
+          Текст статьи <span class="text-red-500">*</span>
+        </label>
+        
+        <!-- Панель инструментов -->
+        <div class="border border-gray-300 rounded-t-md bg-gray-50 p-2 flex items-center space-x-2">
+          <button type="button" @click="formatText('bold')" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Жирный">
+            <BoldIcon class="w-4 h-4" />
+          </button>
+          <button type="button" @click="formatText('italic')" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Курсив">
+            <ItalicIcon class="w-4 h-4" />
+          </button>
+          <div class="border-l border-gray-300 h-6"></div>
+          <button type="button" @click="formatText('h2')" class="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Заголовок">H2</button>
+          <button type="button" @click="formatText('quote')" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Цитата">
+            <ChatBubbleLeftIcon class="w-4 h-4" />
+          </button>
+          <div class="border-l border-gray-300 h-6"></div>
+          <button type="button" @click="formatText('link')" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors" title="Ссылка">
+            <LinkIcon class="w-4 h-4" />
+          </button>
+        </div>
+        
+        <textarea
+          ref="contentTextarea"
+          v-model="form.content"
+          required
+          rows="15"
+          class="block w-full px-3 py-2 border border-gray-300 rounded-b-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 text-sm"
+          :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.content }"
+          placeholder="Напишите содержимое статьи..."
+          @keydown="handleKeydown"
+        ></textarea>
+        
+        <div v-if="errors.content" class="mt-1 text-xs text-red-600">{{ errors.content }}</div>
+        <div class="mt-1 text-xs text-gray-500 flex justify-between">
+          <span>{{ form.content.length }} символов</span>
+          <span class="text-gray-400">Минимум 100 символов</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Настройки публикации -->
+    <div class="bg-white rounded-md shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Настройки публикации</h2>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Статус публикации</label>
+          <div class="space-y-3 mt-2">
+            <label class="flex items-start">
+              <input v-model="form.status" type="radio" value="published" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-1" />
+              <span class="ml-3 text-sm">
+                <span class="font-medium text-gray-900">Опубликовать</span>
+                <span class="text-gray-500 block">Статья будет доступна всем пользователям</span>
+              </span>
+            </label>
+            <label class="flex items-start">
+              <input v-model="form.status" type="radio" value="draft" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-1" />
+              <span class="ml-3 text-sm">
+                <span class="font-medium text-gray-900">Сохранить как черновик</span>
+                <span class="text-gray-500 block">Статья будет сохранена, но не опубликована</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Общие ошибки -->
+    <div v-if="errors.general" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+      <div class="flex">
+        <ExclamationTriangleIcon class="h-5 w-5 text-red-400 mr-2" />
+        <span>{{ errors.general }}</span>
+      </div>
+    </div>
+
+    <!-- Кнопки действий -->
+    <div class="flex items-center justify-between sticky bottom-0 bg-gray-50 p-4 rounded-md border border-gray-200">
+      <button
+        type="button"
+        @click="$emit('cancel')"
+        class="py-2 px-4 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-700 text-sm font-medium transition-colors"
+      >
+        Отмена
+      </button>
+      
+      <button
+        type="submit"
+        :disabled="postsStore.isSubmitting || !form.title.trim() || !form.content.trim()"
+        class="py-2 px-4 border border-transparent rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm font-medium transition-colors"
+        :class="{ 'opacity-50 cursor-not-allowed': postsStore.isSubmitting || !form.title.trim() || !form.content.trim() }"
+      >
+        <div v-if="postsStore.isSubmitting" class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+        {{ isEditing ? 'Сохранить изменения' : (form.status === 'published' ? 'Опубликовать' : 'Сохранить черновик') }}
+      </button>
+    </div>
+  </form>
 </template>
 
 <script>
-import { ref, computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { usePostsStore } from '@/stores/posts'
 import { useToast } from 'vue-toastification'
-import PostPinButton from './PostPinButton.vue'
 import {
-  DocumentTextIcon,
-  UserIcon,
-  CalendarIcon,
-  EyeIcon,
+  XMarkIcon,
+  PhotoIcon,
   ChatBubbleLeftIcon,
-  EllipsisVerticalIcon,
-  PencilIcon,
-  TrashIcon
+  LinkIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'
 
-const PinIcon = {
-  template: `
-    <svg viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-      <path d="M10 2L12 4V8L14 10V12L10 16L6 12V10L8 8V4L10 2Z"/>
-    </svg>
-  `
+const BoldIcon = {
+  template: '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M6 4v12c0 .55.45 1 1 1h4.5c2.49 0 4.5-2.01 4.5-4.5 0-1.4-.65-2.64-1.67-3.45.39-.82.67-1.69.67-2.55C15 4.01 12.99 2 10.5 2H7c-.55 0-1 .45-1 1v1zm2 2h2.5c.83 0 1.5.67 1.5 1.5S11.33 9 10.5 9H8V6zm0 5h3c.83 0 1.5.67 1.5 1.5S11.83 14 11 14H8v-3z"/></svg>'
+}
+
+const ItalicIcon = {
+  template: '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M8 2h6v2h-2l-2 8h2v2H6v-2h2l2-8H8V2z"/></svg>'
 }
 
 export default {
-  name: 'PostCard',
+  name: 'PostFormComponent',
   components: {
-    DocumentTextIcon,
-    UserIcon,
-    CalendarIcon,
-    EyeIcon,
+    XMarkIcon,
+    PhotoIcon,
     ChatBubbleLeftIcon,
-    EllipsisVerticalIcon,
-    PencilIcon,
-    TrashIcon,
-    PostPinButton,
-    PinIcon
+    LinkIcon,
+    ExclamationTriangleIcon,
+    BoldIcon,
+    ItalicIcon
   },
   props: {
-    post: {
+    initialData: {
       type: Object,
-      required: true
+      default: null
+    },
+    isEditing: {
+      type: Boolean,
+      default: false
     }
   },
-  
-  setup(props) {
-    const authStore = useAuthStore()
+  emits: ['submit', 'cancel'],
+  setup(props, { emit }) {
     const postsStore = usePostsStore()
     const toast = useToast()
     
-    const showActions = ref(false)
+    const contentTextarea = ref(null)
+    const imagePreview = ref(null)
+    const imageFile = ref(null)
+    const errors = ref({})
     
-    const canEdit = computed(() => {
-      return authStore.canEditPost(props.post)
+    const categories = computed(() => postsStore.categories)
+    
+    // Инициализируем форму с данными поста если редактируем
+    const form = reactive({
+      title: props.initialData?.title || '',
+      content: props.initialData?.content || '',
+      category: props.initialData?.category || '',
+      status: props.initialData?.status || 'published',
     })
     
-    const truncatedContent = computed(() => {
-      if (!props.post.content) return ''
-      
-      // Убираем HTML теги и обрезаем текст
-      const plainText = props.post.content.replace(/<[^>]*>/g, '')
-      return plainText.length > 150 
-        ? plainText.substring(0, 150) + '...'
-        : plainText
-    })
+    // Если редактируем и есть изображение — показываем превью
+    if (props.initialData?.image) {
+      imagePreview.value = props.initialData.image
+    }
     
-    const formatDate = (dateString) => {
-      const date = new Date(dateString)
-      const now = new Date()
-      const diffInMs = now - date
-      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
+    const handleImageChange = (event) => {
+      const file = event.target.files[0]
+      if (!file) return
       
-      if (diffInDays === 0) {
-        return 'Сегодня'
-      } else if (diffInDays === 1) {
-        return 'Вчера'
-      } else if (diffInDays < 7) {
-        return `${diffInDays} дн. назад`
-      } else {
-        return date.toLocaleDateString('ru-RU', {
-          day: 'numeric',
-          month: 'short',
-          year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-        })
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('Размер файла не должен превышать 10MB')
+        return
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        toast.error('Можно загружать только изображения')
+        return
+      }
+      
+      imageFile.value = file
+      
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        imagePreview.value = e.target.result
+      }
+      reader.readAsDataURL(file)
+    }
+    
+    const removeImage = () => {
+      imagePreview.value = null
+      imageFile.value = null
+    }
+    
+    const formatText = (format) => {
+      const textarea = contentTextarea.value
+      const start = textarea.selectionStart
+      const end = textarea.selectionEnd
+      const selectedText = form.content.substring(start, end)
+      
+      let formattedText = ''
+      let cursorOffset = 0
+      
+      switch (format) {
+        case 'bold':
+          formattedText = `**${selectedText}**`
+          cursorOffset = selectedText ? 0 : 2
+          break
+        case 'italic':
+          formattedText = `*${selectedText}*`
+          cursorOffset = selectedText ? 0 : 1
+          break
+        case 'h2':
+          formattedText = `## ${selectedText}`
+          cursorOffset = selectedText ? 0 : 3
+          break
+        case 'quote':
+          formattedText = `> ${selectedText}`
+          cursorOffset = selectedText ? 0 : 2
+          break
+        case 'link':
+          const url = selectedText.startsWith('http') ? selectedText : 'https://'
+          const linkText = selectedText.startsWith('http') ? 'Текст ссылки' : selectedText || 'Текст ссылки'
+          formattedText = `[${linkText}](${url})`
+          cursorOffset = selectedText ? 0 : 1
+          break
+        default:
+          formattedText = selectedText
+      }
+      
+      form.content = form.content.substring(0, start) + formattedText + form.content.substring(end)
+      
+      setTimeout(() => {
+        textarea.focus()
+        const newPosition = start + formattedText.length - cursorOffset
+        textarea.setSelectionRange(newPosition, newPosition)
+      }, 0)
+    }
+    
+    const handleKeydown = (event) => {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case 'b':
+            event.preventDefault()
+            formatText('bold')
+            break
+          case 'i':
+            event.preventDefault()
+            formatText('italic')
+            break
+        }
+      }
+      
+      if (event.key === 'Tab') {
+        event.preventDefault()
+        const start = event.target.selectionStart
+        const end = event.target.selectionEnd
+        form.content = form.content.substring(0, start) + '  ' + form.content.substring(end)
+        setTimeout(() => {
+          event.target.setSelectionRange(start + 2, start + 2)
+        }, 0)
       }
     }
     
-    const formatNumber = (num) => {
-      if (num >= 1000000) {
-        return (num / 1000000).toFixed(1) + 'M'
-      } else if (num >= 1000) {
-        return (num / 1000).toFixed(1) + 'K'
-      }
-      return num.toString()
-    }
-    
-    const getCategoryName = (category) => {
-      if (!category) return 'Без категории'
+    const validateForm = () => {
+      const newErrors = {}
       
-      if (typeof category === 'string') {
-        return category
-      }
-      return category?.name || 'Без категории'
-    }
-    
-    const getCategorySlug = (category) => {
-      if (!category) return null
-      
-      if (typeof category === 'object' && category?.slug) {
-        return category.slug
+      if (!form.title.trim()) {
+        newErrors.title = 'Заголовок обязателен'
+      } else if (form.title.length > 200) {
+        newErrors.title = 'Заголовок не должен превышать 200 символов'
       }
       
-      // Если категория передана как строка, пытаемся найти её в store
-      if (typeof category === 'string') {
-        const categoryObj = postsStore.categories.find(cat => cat.name === category)
-        return categoryObj?.slug || null
+      if (!form.content.trim()) {
+        newErrors.content = 'Содержимое статьи обязательно'
+      } else if (form.content.length < 100) {
+        newErrors.content = 'Статья должна содержать минимум 100 символов'
       }
       
-      return null
+      errors.value = newErrors
+      return Object.keys(newErrors).length === 0
     }
     
-    const handleImageError = (event) => {
-      // Скрываем изображение при ошибке загрузки
-      event.target.style.display = 'none'
-    }
-    
-    const handleDelete = async () => {
-      if (!confirm('Вы уверены, что хотите удалить этот пост?')) {
+    const handleSubmit = async () => {
+      errors.value = {}
+      
+      if (!validateForm()) {
+        toast.error('Пожалуйста, исправьте ошибки в форме')
         return
       }
       
       try {
-        await postsStore.deletePost(props.post.slug)
-        toast.success('Пост успешно удален')
-        showActions.value = false
+        const requestData = new FormData()
+        requestData.append('title', form.title.trim())
+        requestData.append('content', form.content.trim())
+        requestData.append('status', form.status)
+        
+        if (form.category) {
+          requestData.append('category', form.category)
+        }
+        
+        if (imageFile.value) {
+          requestData.append('image', imageFile.value)
+        }
+        
+        emit('submit', requestData)
+        
       } catch (error) {
-        console.error('Ошибка удаления поста:', error)
-        toast.error('Не удалось удалить пост')
+        console.error('Ошибка формы:', error)
+        errors.value.general = 'Произошла ошибка. Попробуйте еще раз.'
       }
     }
     
-    return {
-      authStore,
-      showActions,
-      canEdit,
-      truncatedContent,
-      formatDate,
-      formatNumber,
-      getCategoryName,
-      getCategorySlug,
-      handleImageError,
-      handleDelete
-    }
-  },
-  directives: {
-    'click-outside': {
-      beforeMount(el, binding) {
-        el.clickOutsideEvent = function(event) {
-          if (!(el === event.target || el.contains(event.target))) {
-            binding.value()
-          }
-        }
-        document.addEventListener('click', el.clickOutsideEvent)
-      },
-      unmounted(el) {
-        document.removeEventListener('click', el.clickOutsideEvent)
+    onMounted(async () => {
+      if (categories.value.length === 0) {
+        await postsStore.fetchCategories()
       }
+    })
+    
+    return {
+      postsStore,
+      form,
+      errors,
+      categories,
+      contentTextarea,
+      imagePreview,
+      handleImageChange,
+      removeImage,
+      formatText,
+      handleKeydown,
+      handleSubmit
     }
   }
 }
 </script>
-
-<style scoped>
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.aspect-w-16 {
-  position: relative;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-}
-
-.aspect-w-16 > * {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-</style>

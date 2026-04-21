@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -71,16 +72,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB', default='newssite'),
-        'USER': config('POSTGRES_USER', default='newsuser'),
-        'PASSWORD': config('POSTGRES_PASSWORD'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432', cast=int),
-        'ATOMIC_REQUESTS': True,
+    'default':  dj_database_url.parse(config('DATABASE_URL'))
+
     }
-}
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

@@ -263,7 +263,7 @@ def pinned_posts_list(request):
         })
     
     return Response({
-        'count': int(posts_data),
+        'count': len(posts_data),
         'results': posts_data,
     })
 

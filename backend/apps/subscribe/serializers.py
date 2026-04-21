@@ -104,7 +104,7 @@ class PinnedPostSerializer(serializers.ModelSerializer):
             'title': obj.post.title,
             'slug': obj.post.slug,
             'content': obj.post.content,
-            'image': obj.post.image,
+            'image': obj.post.image.url if obj.post.image else None,
             'views_count': obj.post.views_count,
             'created_at': obj.post.created_at,
         }

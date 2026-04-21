@@ -255,19 +255,23 @@ def stripe_webhook(request):
         event = stripe.Webhook.construct_event(
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
-    except ValueError:
+    except ValueError as e:
+        print(f'ValueError: {e}')
         # Неверный payload
         return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
+    except stripe.error.SignatureVerificationError as e:
+        print(f'SignatureVerificationError: {e}')
         # Неверная подпись
         return HttpResponse(status=400)
     
     # Обрабатываем событие
     success = WebhookService.process_stripe_webhook(event)
+    print(f'Webhook processed: {success}')
     
     if success:
         return HttpResponse(status=200)
     else:
+        print('WebhookService returned False')
         return HttpResponse(status=400)
     
 @api_view(['GET'])

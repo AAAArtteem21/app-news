@@ -56,7 +56,7 @@ class PostManager(models.Manager):
         ).prefetch_related('pin_info')
     
     def get_posts_for_feed(self):
-        return self.filter(is_published=True).order_by('-created_at')
+        return self.filter(status='published').order_by('-created_at')
 
 
 class Post(models.Model):

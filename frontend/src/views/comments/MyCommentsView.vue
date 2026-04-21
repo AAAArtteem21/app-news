@@ -28,11 +28,13 @@
               <div>
                 К статье: 
                 <router-link 
+                  v-if="comment.post_slug"
                   :to="{ name: 'PostDetail', params: { slug: comment.post_slug } }"
                   class="text-accent-600 hover:text-accent-700"
                 >
                   {{ comment.post_title }}
                 </router-link>
+                <span v-else class="text-accent-600">{{ comment.post_title }}</span>
               </div>
               <div>{{ formatDate(comment.created_at) }}</div>
             </div>

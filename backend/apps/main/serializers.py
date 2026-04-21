@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.utils.text import slugify
+from slugify import slugify
 from .models import Category, Post
 
 
@@ -101,7 +101,7 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ['title', 'content', 'image', 'category', 'status']
+        fields = ['id','slug','title', 'content', 'image', 'category', 'status']
 
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user

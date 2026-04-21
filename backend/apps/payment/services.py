@@ -4,7 +4,7 @@ from django.utils import timezone
 from decimal import Decimal
 from typing import Dict, Optional, Tuple
 import logging
-
+import json
 from .models import Payment, PaymentAttempt, WebhookEvent
 from apps.subscribe.models import Subscription, SubscriptionPlan, SubscriptionHistory
 
@@ -263,29 +263,25 @@ class PaymentService:
 
 class WebhookService:
     """Сервис для обработки webhook событий"""
-
     @staticmethod
-    def process_stripe_webhook(event_data: Dict) -> bool:
-        """Обрабатывает Stripe webhook"""
+    def process_stripe_webhook(event_data) -> bool:
         try:
-            event_id = event_data.get('id')
-            event_type = event_data.get('type')
+            # Stripe объект — обращаемся через атрибуты
+            event_id = event_data['id']
+            event_type = event_data['type']
 
-            # Проверяем, не обрабатывали ли мы уже это событие
             if WebhookEvent.objects.filter(event_id=event_id).exists():
                 return True
 
-            # Создаем запись о событии
             webhook_event = WebhookEvent.objects.create(
                 provider='stripe',
                 event_id=event_id,
                 event_type=event_type,
-                data=event_data
+                data=json.loads(str(event_data))   # ← конвертируем в dict для сохранения
             )
 
-            # Обрабатываем различные типы событий
             success = False
-            
+
             if event_type == 'checkout.session.completed':
                 success = WebhookService._handle_checkout_completed(event_data)
             elif event_type == 'payment_intent.succeeded':
@@ -295,7 +291,6 @@ class WebhookService:
             elif event_type == 'charge.dispute.created':
                 success = WebhookService._handle_dispute_created(event_data)
             else:
-                # Неизвестный тип события - помечаем как игнорируемый
                 webhook_event.status = 'ignored'
                 webhook_event.save()
                 return True
@@ -309,15 +304,18 @@ class WebhookService:
 
         except Exception as e:
             logger.error(f"Error processing Stripe webhook: {e}")
+            print(f"Webhook exception type: {type(e)}")
+            print(f"Webhook exception: {e}")
+            import traceback
+            traceback.print_exc()
             return False
 
     @staticmethod
-    def _handle_checkout_completed(event_data: Dict) -> bool:
-        """Обрабатывает завершение checkout сессии"""
+    def _handle_checkout_completed(event_data) -> bool:
         try:
             session = event_data['data']['object']
-            metadata = session.get('metadata', {})
-            payment_id = metadata.get('payment_id')
+            metadata = session['metadata']
+            payment_id = metadata['payment_id']
 
             if not payment_id:
                 logger.warning("No payment_id in checkout session metadata")
@@ -327,19 +325,20 @@ class WebhookService:
             return PaymentService.process_successful_payment(payment)
 
         except Payment.DoesNotExist:
-            logger.error(f"Payment not found for checkout session")
+            logger.error("Payment not found for checkout session")
             return False
         except Exception as e:
             logger.error(f"Error handling checkout completed: {e}")
+            import traceback
+            traceback.print_exc()
             return False
 
     @staticmethod
-    def _handle_payment_succeeded(event_data: Dict) -> bool:
-        """Обрабатывает успешный платеж"""
+    def _handle_payment_succeeded(event_data) -> bool:
         try:
             payment_intent = event_data['data']['object']
-            metadata = payment_intent.get('metadata', {})
-            payment_id = metadata.get('payment_id')
+            metadata = payment_intent['metadata']
+            payment_id = metadata['payment_id']
 
             if not payment_id:
                 logger.warning("No payment_id in payment intent metadata")
@@ -352,10 +351,12 @@ class WebhookService:
             return PaymentService.process_successful_payment(payment)
 
         except Payment.DoesNotExist:
-            logger.error(f"Payment not found for payment intent")
+            logger.error("Payment not found for payment intent")
             return False
         except Exception as e:
             logger.error(f"Error handling payment succeeded: {e}")
+            import traceback
+            traceback.print_exc()
             return False
 
     @staticmethod

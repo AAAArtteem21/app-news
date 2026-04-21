@@ -648,31 +648,22 @@ export default {
       
       try {
         // Создаем объект с данными для API
-        const postData = {
-          title: form.title.trim(),
-          content: form.content.trim(),
-          status: form.status
-        }
-        
-        // Добавляем категорию, если выбрана
+        const requestData = new FormData()
+        requestData.append('title', form.title.trim())
+        requestData.append('content', form.content.trim())
+        requestData.append('status', form.status)
+
         if (form.category) {
-          postData.category = form.category
+          requestData.append('category', form.category)
         }
-        
-        // Если есть изображение, создаем FormData
-        let requestData
+
         if (imageFile.value) {
-          requestData = new FormData()
-          Object.keys(postData).forEach(key => {
-            requestData.append(key, postData[key])
-          })
           requestData.append('image', imageFile.value)
-        } else {
-          requestData = postData
         }
-        
+
         // Используем store метод вместо прямого API вызова
         const newPost = await postsStore.createPost(requestData)
+        console.log('newPost:', newPost)
         
         // Очищаем автосохранение
         if (autoSaveTimer.value) {
@@ -685,6 +676,7 @@ export default {
             : 'Черновик сохранен!'
         )
         
+        console.log('Значение slug:', newPost.slug);
         router.push({ name: 'PostDetail', params: { slug: newPost.slug } })
         
       } catch (error) {

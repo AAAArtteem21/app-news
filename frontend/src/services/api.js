@@ -129,7 +129,7 @@ export const categoriesAPI = {
 export const postsAPI = {
   getAll: (params) => api.get('/api/v1/posts/', { params }),
   getById: (slug) => api.get(`/api/v1/posts/${slug}/`),
-  create: (data) => api.post('/api/v1/posts/', data),
+  create: (data, config = {}) => api.post('/api/v1/posts/', data, config),
   update: (slug, data) => api.put(`/api/v1/posts/${slug}/`, data),
   updatePartial: (slug, data) => api.patch(`/api/v1/posts/${slug}/`, data),
   delete: (slug) => api.delete(`/api/v1/posts/${slug}/`),
@@ -162,7 +162,7 @@ export const paymentAPI = {
 export const commentsAPI = {
   getAll: (params) => api.get('/api/v1/comments/', { params }),
   getById: (id) => api.get(`/api/v1/comments/${id}/`),
-  create: (data, config = {}) => api.post('/api/v1/posts/', data, config),
+  create: (data, config = {}) => api.post('/api/v1/comments/', data, config),
   update: (id, data) => api.put(`/api/v1/comments/${id}/`, data),
   updatePartial: (id, data) => api.patch(`/api/v1/comments/${id}/`, data),
   delete: (id) => api.delete(`/api/v1/comments/${id}/`),

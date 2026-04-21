@@ -86,11 +86,15 @@
             <div class="flex-1">
               <div class="flex items-center space-x-2 mb-2">
                 <router-link
+                  v-if="post.slug"
                   :to="{ name: 'PostDetail', params: { slug: post.slug } }"
                   class="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors"
                 >
                   {{ post.title }}
                 </router-link>
+                <span v-else class="text-lg font-medium text-gray-900">
+                  {{ post.title }}
+                </span>
                 
                 <!-- Статусы -->
                 <div class="flex items-center space-x-2">
@@ -173,6 +177,17 @@
             </div>
           </div>
         </div>
+      </div>
+      <div v-else class="text-center py-16 bg-white rounded-md border border-gray-200">
+        <DocumentTextIcon class="w-12 h-12 text-gray-300 mx-auto mb-4" />
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Нет статей</h3>
+        <p class="text-gray-500 text-sm mb-6">Вы еще не создали ни одной статьи</p>
+        <router-link
+          to="/posts/create"
+          class="py-2 px-4 border border-transparent rounded-md text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium transition-colors"
+        >
+          Создать первую статью
+        </router-link>
       </div>
     </div>
   </div>

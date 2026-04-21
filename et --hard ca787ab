@@ -1,0 +1,29 @@
+[33m32e5b17[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m DIXX
+[33mca787ab[m fix med
+[33m3e91022[m cloudinary
+[33meedb523[m fix media
+[33m58d46f2[m new db
+[33m42ba603[m sett
+[33mf207eb2[m dockercmd
+[33m6e53abe[m frnoooooooooot
+[33m514c1e6[m front deploy
+[33me730882[m dockerfix
+[33me6e531f[m qeq
+[33m779bf54[m reqq
+[33m0708531[m req
+[33mb49a5fc[m fix
+[33me14d35c[m docker/fix bags
+[33mea65662[m FIXXXX
+[33mf9bfb69[m save
+[33mded9ce8[m bug
+[33md162737[m add backend
+[33m4e07ce6[m add payment/stripe
+[33m1d659da[m add subscribe
+[33m6dde4a6[m add payment/subscribe on apps. create serializers for subscribe
+[33m0f87f72[m add comments app/admin for main
+[33me2d3a39[m add main(post)
+[33m98b8bae[m fix serializers for acc/admin/
+[33mb90e18d[m add urls/views/serrialezrs acc
+[33mac0f51b[m add account app and serializers
+[33m4dd654a[m gitignore
+[33md7faa6d[m init

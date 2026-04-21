@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from decouple import config
 import dj_database_url
+import cloudinary
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -28,6 +29,8 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'django_filters',
     'rest_framework_simplejwt',
+    'cloudinary',
+    'cloudinary_storage'
 ]
 
 LOCAL_APPS = [
@@ -117,8 +120,7 @@ STATICFILES_FINDERS = [
 ]
 
 # Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -230,3 +232,10 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': 3600.0,  # Каждый час
     },
 }
+
+cloudinary.config(
+    cloud_name = config("cloud_name"),
+    api_key = config("api_key"),
+    api_secret = config("api_secret")
+
+)

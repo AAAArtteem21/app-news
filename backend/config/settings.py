@@ -160,8 +160,8 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Укажите порт, на котором работает ваш Vue.js
     "http://127.0.0.1:5173",
-    "https://domen.com",
-    "https://www.domen.com",
+    "https://app-news-2-74rz.onrender.com/",
+    "https://www.app-news-2-74rz.onrender.com/",
 ]
 
 # JWT Configuration

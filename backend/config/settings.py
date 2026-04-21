@@ -7,7 +7,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['app-news-1.onrender.com', '.onrender.com']
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "app-news-1-kpkv.onrender.com"]
 
 # Application definition
 DJANGO_APPS = [
@@ -103,7 +106,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = "/app/staticfiles"
 
 # Additional locations of static files (только если директория существует)
 STATICFILES_DIRS = []

@@ -4,6 +4,13 @@ from decouple import config
 import dj_database_url
 import cloudinary
 
+cloudinary.config(
+    cloud_name = config("cloud_name"),
+    api_key = config("api_key"),
+    api_secret = config("api_secret")
+
+)
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
@@ -119,8 +126,11 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
-# Media files
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+}
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -233,9 +243,3 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-cloudinary.config(
-    cloud_name = config("cloud_name"),
-    api_key = config("api_key"),
-    api_secret = config("api_secret")
-
-)

@@ -4,12 +4,11 @@ from decouple import config
 import dj_database_url
 import cloudinary
 
-cloudinary.config(
-    cloud_name = config("cloud_name"),
-    api_key = config("api_key"),
-    api_secret = config("api_secret")
-
-)
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUD_NAME'),
+    'API_KEY': config('API_KEY'),
+    'API_SECRET': config('API_SECRET'),
+}
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -28,6 +27,8 @@ DJANGO_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
 ]
 
@@ -36,8 +37,7 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'django_filters',
     'rest_framework_simplejwt',
-    'cloudinary',
-    'cloudinary_storage'
+
 ]
 
 LOCAL_APPS = [

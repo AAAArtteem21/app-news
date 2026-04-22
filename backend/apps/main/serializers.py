@@ -65,7 +65,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'id', 'title', 'slug', 'content', 'image', 'category',
             'category_info', 'author', 'author_info', 'status',
             'created_at', 'updated_at', 'views_count', 'comments_count',
-            'is_pinned', 'pinned_info', 'can_pin'
+            'is_pinned', 'pinned_info', 'can_pin','likes_count', 'is_liked_by_user'
         ]
         read_only_fields = ['slug', 'author', 'views_count']
 

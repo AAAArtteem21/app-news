@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from slugify import slugify
 from .models import Category, Post
-
+import uuid
 
 class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор для категорий"""
@@ -116,7 +116,11 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user
-        validated_data['slug'] = slugify(validated_data['title'])
+        slug = slugify(validated_data['title'])
+        # если такой slug уже есть — добавляем уникальный суффикс
+        if Post.objects.filter(slug=slug).exists():
+            slug = f"{slug}-{str(uuid.uuid4())[:8]}"
+        validated_data['slug'] = slug
         return super().create(validated_data)
 
     def update(self, instance, validated_data):

@@ -132,7 +132,16 @@
               <div class="flex items-center space-x-4">
                 <!-- Автор -->
                 <div class="flex items-center space-x-3">
-                  <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                  <img
+                    v-if="post.author_info?.avatar"
+                    :src="post.author_info.avatar"
+                    :alt="post.author_info?.full_name"
+                    class="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div
+                    v-else
+                    class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                  >
                     {{ getAuthorInitials(post.author_info) }}
                   </div>
                   <div>

@@ -115,7 +115,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = "/app/staticfiles"
-
+WHITENOISE_ROOT = '/app/staticfiles'
 # Additional locations of static files (только если директория существует)
 STATICFILES_DIRS = []
 

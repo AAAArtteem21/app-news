@@ -139,6 +139,7 @@ STORAGES = {
     },
 }
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 # Добавить после STORAGES
 
 

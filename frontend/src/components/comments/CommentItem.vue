@@ -2,8 +2,19 @@
   <div class="flex space-x-3">
     <!-- Аватар -->
     <div class="flex-shrink-0">
-      <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-        {{ getAuthorInitials(comment.author_info) }}
+      <div class="flex-shrink-0">
+        <img
+          v-if="comment.author_info?.avatar"
+          :src="comment.author_info.avatar"
+          :alt="comment.author_info?.username"
+          class="w-8 h-8 rounded-full object-cover"
+        />
+        <div
+          v-else
+          class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium"
+        >
+          {{ getAuthorInitials(comment.author_info) }}
+        </div>
       </div>
     </div>
     

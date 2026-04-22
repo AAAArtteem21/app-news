@@ -89,9 +89,18 @@
               @click.stop="toggleUserMenu"
               class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                {{ authStore.userInitials }}
-              </div>
+            <img
+              v-if="authStore.user?.avatar"
+              :src="authStore.user.avatar"
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover"
+            />
+            <div
+              v-else
+              class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium"
+            >
+              {{ authStore.userInitials }}
+            </div>
               <span class="hidden sm:block text-sm font-medium text-gray-700">
                 {{ authStore.userFullName }}
               </span>

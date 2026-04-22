@@ -1,5 +1,6 @@
 #!/bin/bash
 python manage.py migrate --noinput
+python -c "import django.contrib.admin; import os; print(os.path.join(os.path.dirname(django.contrib.admin.__file__), 'static'))"
 python manage.py collectstatic --noinput --clear
 python manage.py create_subscription_product
 python manage.py fix_stripe_integration

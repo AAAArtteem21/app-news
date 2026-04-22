@@ -308,3 +308,21 @@ def toggle_post_pin_status(request, slug):
             'error': str(e)
         }, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def toggle_like(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    user = request.user
+    
+    if user in post.likes.all():
+        post.likes.remove(user)
+        liked = False
+    else:
+        post.likes.add(user)
+        liked = True
+    
+    return Response({
+        'liked': liked,
+        'likes_count': post.likes.count()
+    })

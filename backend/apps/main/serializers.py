@@ -56,6 +56,8 @@ class PostDetailSerializer(serializers.ModelSerializer):
     is_pinned = serializers.ReadOnlyField()
     pinned_info = serializers.SerializerMethodField()
     can_pin = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+    is_liked_by_user = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -94,6 +96,15 @@ class PostDetailSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             return False
         return obj.can_be_pinned_by(request.user)
+    
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+
+    def get_is_liked_by_user(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.likes.filter(id=request.user.id).exists()
+        return False
 
 
 class PostCreateUpdateSerializer(serializers.ModelSerializer):

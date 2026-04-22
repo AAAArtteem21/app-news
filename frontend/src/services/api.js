@@ -139,7 +139,8 @@ export const postsAPI = {
   delete: (slug) => api.delete(`/api/v1/posts/${slug}/`),
   getMyPosts: (params) => api.get('/api/v1/posts/my-posts/', { params }),
   getPopular: () => api.get('/api/v1/posts/popular/'),
-  getRecent: () => api.get('/api/v1/posts/recent/')
+  getRecent: () => api.get('/api/v1/posts/recent/'),
+  toggleLike: (slug) => api.post(`/api/v1/posts/${slug}/like/`)
 }
 
 export const subscriptionAPI = {

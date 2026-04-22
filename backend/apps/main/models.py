@@ -68,6 +68,7 @@ class Post(models.Model):
         ('published', 'Published'),
     ]
 
+
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     content = models.TextField()
@@ -92,7 +93,11 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     views_count = models.PositiveIntegerField(default=0)
-
+    likes = models.ManyToManyField(
+            settings.AUTH_USER_MODEL,
+            related_name='liked_posts',
+            blank=True
+        )
     objects = PostManager()
 
     class Meta:

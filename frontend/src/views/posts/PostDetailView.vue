@@ -277,6 +277,7 @@
 </template>
 
 <script>
+import { postsAPI } from '@/services/api'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -396,6 +397,12 @@ export default {
       try {
         await postsStore.fetchPostBySlug(props.slug)
         
+        // ✅ добавьте это
+        if (post.value) {
+          likesCount.value = post.value.likes_count || 0
+          isLiked.value = post.value.is_liked_by_user || false
+        }
+        
         if (post.value?.category_info) {
           const categoryPosts = await postsStore.fetchPostsByCategory(
             post.value.category_info.slug,
@@ -428,18 +435,19 @@ export default {
       }
     }
     
-    const toggleLike = () => {
+    const toggleLike = async () => {
       if (!authStore.isAuthenticated) {
         toast.info('Войдите, чтобы поставить лайк')
         return
       }
-      
-      isLiked.value = !isLiked.value
-      likesCount.value += isLiked.value ? 1 : -1
-      
-      toast.success(isLiked.value ? 'Лайк добавлен' : 'Лайк убран')
-    }
-    
+      try {
+        const response = await postsAPI.toggleLike(post.value.slug)
+        isLiked.value = response.data.liked
+        likesCount.value = response.data.likes_count
+      } catch (error) {
+        toast.error('Ошибка при постановке лайка')
+      }
+    } 
     const toggleBookmark = () => {
       if (!authStore.isAuthenticated) {
         toast.info('Войдите, чтобы добавить в закладки')

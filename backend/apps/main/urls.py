@@ -15,4 +15,5 @@ urlpatterns = [
     path('featured/', views.featured_posts, name='featured-posts'),
     path('recent/', views.recent_posts, name='recent-posts'),
     path('<slug:slug>/', views.PostDetailView.as_view(), name='post-detail'),
+    path('posts/<slug:slug>/like/', views.toggle_like, name='toggle-like'),
 ]

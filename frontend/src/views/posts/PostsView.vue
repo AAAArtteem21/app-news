@@ -14,7 +14,7 @@
         <div v-if="authStore.isAuthenticated" class="mt-4 lg:mt-0">
           <router-link
             to="/posts/create"
-            class="py-2 px-4 border border-transparent rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm font-medium transition-colors"
+            class="inline-flex items-center py-2 px-4 border border-transparent rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm font-medium transition-colors"
           >
             <PlusIcon class="w-5 h-5 mr-2" />
             Создать пост

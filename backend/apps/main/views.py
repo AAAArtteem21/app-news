@@ -114,7 +114,7 @@ class MyPostsView(generics.ListAPIView):
     """API endpoint для постов текущего пользователя"""
     serializer_class = PostListSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend  ]
     filterset_fields = ['category', 'status']
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'updated_at', 'views_count', 'title']
@@ -325,4 +325,20 @@ def toggle_like(request, slug):
     return Response({
         'liked': liked,
         'likes_count': post.likes.count()
+    })
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def validate(request):
+    username = request.data.get("username")
+    email = request.data.get('email')
+
+    if not username or not email:
+        return Response({
+            'error':'Username and email be requred'
+        },status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response({
+        'status':'ok',
+        'username': username
     })

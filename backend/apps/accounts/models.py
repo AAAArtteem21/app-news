@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from datetime import timedelta
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -34,4 +36,8 @@ class User(AbstractUser):
     username = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    users = User.objects.filter(created_at__gte=timezone.now() - timedelta(days=7)).order_by('created_at')
+    @classmethod
+    def recent_users(cls):
+        return cls.objects.filter(
+            created_at__gte=timezone.now() - timedelta(days=7)
+        ).order_by("created_at")
